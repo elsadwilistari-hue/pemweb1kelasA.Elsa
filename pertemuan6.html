@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Penentu Kelulusan</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 24px;
+      max-width: 700px;
+      margin: auto;
+      background: #f7f9fc;
+      color: #222;
+    }
+    h1 { margin-top: 0; }
+    label { display: block; margin: 12px 0 6px; }
+    input[type="number"] {
+      padding: 8px;
+      width: 100%;
+      box-sizing: border-box;
+      font-size: 16px;
+    }
+    button {
+      margin-top: 12px;
+      padding: 10px 16px;
+      font-size: 16px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      background: #1976d2;
+      color: white;
+    }
+    button:active { transform: translateY(1px); }
+    p#result {
+      margin-top: 18px;
+      padding: 12px;
+      border-radius: 6px;
+      background: #fff;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    }
+    .lulus { color: #0b6623; font-weight: bold; }
+    .tidak-lulus { color: #b00020; font-weight: bold; }
+    small { color: #666; }
+  </style>
+</head>
+<body>
+  <h1>Studi Kasus: Penentu Kelulusan</h1>
+
+  <label for="teori">Nilai Teori</label>
+  <input id="teori" type="number" min="0" max="100" step="0.1" placeholder="Masukkan nilai teori (0-100)">
+
+  <label for="praktik">Nilai Praktik</label>
+  <input id="praktik" type="number" min="0" max="100" step="0.1" placeholder="Masukkan nilai praktik (0-100)">
+
+  <button id="cekBtn">Hitung Rata-Rata & Tentukan Status</button>
+
+  <!-- Elemen <p> yang diminta: hasil akan ditampilkan di sini -->
+  <p id="result"><small>Hasil akan tampil di sini setelah tombol diklik.</small></p>
+
+  <script>
+    // Ambil elemen DOM
+    const teoriEl = document.getElementById('teori');
+    const praktikEl = document.getElementById('praktik');
+    const cekBtn = document.getElementById('cekBtn');
+    const resultP = document.getElementById('result');
+
+    function formatNumber(n) {
+      // tampilkan dengan maksimal 2 desimal, hapus trailing .00 bila integer
+      return Number.isInteger(n) ? n.toString() : n.toFixed(2);
+    }
+
+    function tampilkanHasil(avg, statusText, isLulus) {
+      // menampilkan rata-rata dan status di elemen <p>
+      resultP.innerHTML = `
+        Rata-rata: <strong>${formatNumber(avg)}</strong><br>
+        Status: <span class="${isLulus ? 'lulus' : 'tidak-lulus'}">${statusText}</span>
+      `;
+    }
+
+    cekBtn.addEventListener('click', () => {
+      const teoriVal = teoriEl.value.trim();
+      const praktikVal = praktikEl.value.trim();
+
+      // validasi input kosong
+      if (teoriVal === '' || praktikVal === '') {
+        resultP.innerHTML = '<span class="tidak-lulus">Masukkan nilai teori dan praktik terlebih dahulu.</span>';
+        return;
+      }
+
+      // parsing angka
+      const teoriNum = Number(teoriVal);
+      const praktikNum = Number(praktikVal);
+
+      // validasi numeric dan rentang 0-100
+      if (Number.isNaN(teoriNum) || Number.isNaN(praktikNum)) {
+        resultP.innerHTML = '<span class="tidak-lulus">Nilai harus berupa angka.</span>';
+        return;
+      }
+      if (teoriNum < 0 || teoriNum > 100 || praktikNum < 0 || praktikNum > 100) {
+        resultP.innerHTML = '<span class="tidak-lulus">Nilai harus antara 0 sampai 100.</span>';
+        return;
+      }
+
+      // hitung rata-rata
+      const avg = (teoriNum + praktikNum) / 2;
+
+      // tentukan status sesuai ketentuan: jika Rata-Rata >= 75 -> LULUS
+      let statusText;
+      let isLulus;
+      if (avg >= 75) {
+        statusText = 'LULUS';
+        isLulus = true;
+      } else {
+        statusText = 'TIDAK LULUS. Perlu Remedial.';
+        isLulus = false;
+      }
+
+      // tampilkan hasil di <p>
+      tampilkanHasil(avg, statusText, isLulus);
+    });
+  </script>
+</body>
+</html>
